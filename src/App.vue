@@ -50,13 +50,15 @@ export default {
       this.noDoneShow = this.noDoneShow ? false: true
     },
     subBtnFun(){
-      console.log(this.inputValue)
-      this.noDoneList.push(this.inputValue);
+      if(!this.inputValue) return;
+      // console.log(this.inputValue)
+      this.noDoneList.unshift(this.inputValue);
       this.noDoneShow = true;
+      this.inputValue ='';
     },
     doneFun(index){
-      console.log(this.noDoneList[index])
-      this.doneList.push(this.noDoneList[index])
+      // console.log(this.noDoneList[index])
+      this.doneList.unshift(this.noDoneList[index])
       this.noDoneList.splice(index,1);
     },
     delFun(index){
