@@ -9,17 +9,18 @@
       <div class="content">
         <div class="weiwancehg">
           <div class="title" @click="noDoneClick">未完成</div>
-          <div v-for="(item,index) in noDoneList" class="line" v-if="noDoneShow" @click="doneFun(index)">
+          <div v-for="(item,index) in noDoneList" class="line" v-if="noDoneShow &&item.type ==1 " @click="moveToDone(item.id)">
             <span class="line-icon" style=""></span>
-            <span style="margin-left: 5px;">{{item}}</span>
+            <span style="margin-left: 5px;">{{item.content}}</span>
             <span class="line-quxiao">完成</span>
           </div>
         </div>
         <div class="yiwancheng">
           <div class="title">已完成</div>
-          <div v-for="(item,index) in doneList" class="line" @click="delFun(index)">
+          <div v-for="(item,index) in noDoneList" class="line" @click="delFun(item.id)" v-if=" item.type ==2">
             <span class="line-icon" style=""></span>
-            <span style="margin-left: 5px;">{{item}}</span>
+            <span style="margin-left: 5px;">{{item.content}}</span>
+            <span>{{item.time}}</span>
             <span class="line-quxiao">删除</span>
           </div>
         </div>
@@ -30,8 +31,7 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld'
-
+import {  mapState } from "vuex";
 export default {
   name: 'App',
   data(){
@@ -39,8 +39,13 @@ export default {
       noDoneShow:false,
       inputValue:'',
       noDoneList:[],
-      doneList:[],
+      // doneList:[],
       }
+  },
+  computed:{
+    ...mapState([
+      'event'
+    ])
   },
   components: {
     // HelloWorld
@@ -49,22 +54,49 @@ export default {
     noDoneClick(){
       this.noDoneShow = this.noDoneShow ? false: true
     },
+    // 提交事件
     subBtnFun(){
-      if(!this.inputValue) return;
-      // console.log(this.inputValue)
-      this.noDoneList.unshift(this.inputValue);
-      this.noDoneShow = true;
-      this.inputValue ='';
-    },
-    doneFun(index){
-      // console.log(this.noDoneList[index])
-      this.doneList.unshift(this.noDoneList[index])
-      this.noDoneList.splice(index,1);
-    },
-    delFun(index){
-      this.doneList.splice(index,1);
+      // if(!this.inputValue) return;
+      // this.noDoneList.unshift(this.inputValue);
+      // this.noDoneShow = true;
+      // this.inputValue ='';
+      // 函数的参数值
+      let params = {
+        id:0,
+        type:1,
+        content:'',
+        time:''
+      }
+      // let params =1;
+      this.inputValue = this.inputValue.trim();
+      if(this.inputValue){
+        params.content = this.inputValue;
+        this.$store.dispatch('addevent',params);
+        this.noDoneShow = true;
+        this.noDoneList = this.event;
+        this.inputValue ='';
+      }
 
+    },
+    // 点击完成事件
+    moveToDone(id){
+      console.log(id,'xoxoxo')
+      // console.log(this.noDoneList[index])
+      // this.doneList.unshift(this.noDoneList[index])
+      // this.noDoneList.splice(index,1);
+      this.$store.dispatch('eventdone',id);
+    },
+    // 删除事件
+    delFun(id){
+      // this.doneList.splice(index,1);
+      this.$store.dispatch('deleteEvent', id)
     }
+  },
+  created(){
+    console.log(this.noDoneShow );
+    this.noDoneList = this.event;
+    if(this.noDoneList) this.noDoneShow = true;
+
   }
 }
 </script>
